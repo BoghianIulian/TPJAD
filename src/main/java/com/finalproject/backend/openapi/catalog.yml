@@ -1,0 +1,39 @@
+openapi: 3.0.3
+info:
+  title: Catalog API
+  version: 1.0.0
+
+servers:
+  - url : http://localhost:8080
+
+
+paths:
+  /api/catalog/classroom/{classroomId}:
+    get:
+      summary: Get full class catalog (homeroom teacher)
+      tags: [Catalog]
+      parameters:
+        - in: path
+          name: classroomId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Class catalog
+
+  /api/catalog/classroom/{classroomId}/course/{classCourseId}:
+    get:
+      summary: Get catalog for one course (teacher)
+      tags: [Catalog]
+      parameters:
+        - in: path
+          name: classroomId
+          required: true
+          schema: { type: integer }
+        - in: path
+          name: classCourseId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Course catalog

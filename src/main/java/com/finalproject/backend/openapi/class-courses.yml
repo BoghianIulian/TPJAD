@@ -1,0 +1,155 @@
+openapi: 3.0.3
+info:
+  title: Class-Courses API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+
+  /class-courses:
+    get:
+      summary: Get all class-course assignments (ADMIN, TEACHER)
+      tags: [ClassCourses]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of classroom-course-teacher assignments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClassCourse"
+
+    post:
+      summary: Assign a course to a classroom (ADMIN only)
+      description: |
+        Creates a new classroom-course-teacher assignment.  
+        The pair (classroomId, courseId) must be unique.
+      tags: [ClassCourses]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassCourseDTO"
+            example:
+              classroomId: 3
+              courseId: 5
+              teacherId: 12
+      responses:
+        '200':
+          description: Assignment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassCourse"
+        '400':
+          description: Duplicate classroom-course combination (not allowed)
+
+  /class-courses/{id}:
+    get:
+      summary: Get class-course assignment by ID (ADMIN, TEACHER)
+      tags: [ClassCourses]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 10
+      responses:
+        '200':
+          description: Assignment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassCourse"
+        '404':
+          description: Not found
+
+    delete:
+      summary: Delete an assignment (ADMIN only)
+      tags: [ClassCourses]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 10
+      responses:
+        '200':
+          description: Assignment deleted
+        '404':
+          description: Not found
+
+
+components:
+  schemas:
+
+    ClassCourseDTO:
+      type: object
+      required: [classroomId, courseId, teacherId]
+      properties:
+        classroomId:
+          type: integer
+          example: 3
+        courseId:
+          type: integer
+          example: 5
+        teacherId:
+          type: integer
+          example: 12
+
+    ClassCourse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        classroom:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 3
+            name:
+              type: string
+              example: "10A"
+        course:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 5
+            name:
+              type: string
+              example: "Matematica"
+        teacher:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 12
+            firstName:
+              type: string
+              example: "Andrei"
+            lastName:
+              type: string
+              example: "Popescu"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

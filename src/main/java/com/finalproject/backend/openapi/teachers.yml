@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+  title: Teachers API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+
+  /teachers:
+    get:
+      summary: Get all teachers (ADMIN only)
+      tags: [Teachers]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of teachers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Teacher"
+
+    post:
+      summary: Create new teacher (ADMIN only)
+      tags: [Teachers]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeacherCreateDTO"
+            example:
+              firstName: "Andrei"
+              lastName: "Popescu"
+              registrationCode: "PROF-AB12"
+      responses:
+        '200':
+          description: Teacher created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Teacher"
+
+  /teachers/{id}:
+    get:
+      summary: Get teacher by ID
+      tags: [Teachers]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 12
+      responses:
+        '200':
+          description: Teacher
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Teacher"
+        '404':
+          description: Teacher not found
+
+    put:
+      summary: Update teacher (ADMIN or TEACHER)
+      tags: [Teachers]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 12
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeacherUpdateDTO"
+            example:
+              firstName: "Andrei"
+              lastName: "Popescu"
+      responses:
+        '200':
+          description: Teacher updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Teacher"
+
+    delete:
+      summary: Delete teacher (ADMIN only)
+      tags: [Teachers]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          example: 12
+      responses:
+        '200':
+          description: Teacher deleted
+        '404':
+          description: Teacher not found
+
+components:
+  schemas:
+
+    Teacher:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 12
+        firstName:
+          type: string
+          example: "Andrei"
+        lastName:
+          type: string
+          example: "Popescu"
+        registrationCode:
+          type: string
+          example: "PROF-AB12"
+
+    TeacherCreateDTO:
+      type: object
+      required: [firstName, lastName, registrationCode]
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        registrationCode:
+          type: string
+
+    TeacherUpdateDTO:
+      type: object
+      required: [firstName, lastName]
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

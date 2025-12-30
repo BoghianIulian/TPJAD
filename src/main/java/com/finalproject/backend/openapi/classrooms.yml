@@ -1,0 +1,165 @@
+openapi: 3.0.3
+info:
+  title: Classrooms API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+
+  /classrooms:
+    get:
+      summary: Get all classrooms (ADMIN only)
+      tags: [Classrooms]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of classrooms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Classroom"
+
+    post:
+      summary: Create new classroom (ADMIN only)
+      tags: [Classrooms]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassroomDTO"
+            example:
+              name: "10A"
+              homeroomTeacherId: 5
+      responses:
+        '200':
+          description: Created classroom
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Classroom"
+
+  /classrooms/{id}:
+    get:
+      summary: Get classroom by ID
+      tags: [Classrooms]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          example: 3
+          required: true
+      responses:
+        '200':
+          description: Classroom
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Classroom"
+
+    put:
+      summary: Update classroom (ADMIN only)
+      tags: [Classrooms]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          example: 3
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassroomDTO"
+            example:
+              name: "11B"
+              homeroomTeacherId: 4
+      responses:
+        '200':
+          description: Classroom updated
+
+    delete:
+      summary: Delete classroom (ADMIN only)
+      tags: [Classrooms]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 3
+      responses:
+        '200':
+          description: Deleted classroom
+
+  /classrooms/teacher/{teacherId}:
+    get:
+      summary: Get classroom assigned to a teacher
+      tags: [Classrooms]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: teacherId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 5
+      responses:
+        '200':
+          description: Teacher's classroom
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Classroom"
+        '404':
+          description: No classroom found
+
+components:
+  schemas:
+
+    Classroom:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        name:
+          type: string
+          example: "10A"
+        homeroomTeacherId:
+          type: integer
+          example: 3
+
+    ClassroomDTO:
+      type: object
+      required: [name, homeroomTeacherId]
+      properties:
+        name:
+          type: string
+          example: "11B"
+        homeroomTeacherId:
+          type: integer
+          example: 4
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

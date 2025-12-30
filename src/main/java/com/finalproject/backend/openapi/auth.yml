@@ -1,0 +1,46 @@
+openapi: 3.0.3
+info:
+  title: Authentication API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+
+  /auth/login:
+    post:
+      summary: Login and retrieve JWT token
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+            example:
+              username: "andrei.popescu"
+              password: "parola123"
+      responses:
+        '200':
+          description: JWT Token
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Invalid credentials
+
+components:
+  schemas:
+
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          example: "andrei.popescu"
+        password:
+          type: string
+          example: "parola123"

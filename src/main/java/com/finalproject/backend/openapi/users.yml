@@ -1,0 +1,64 @@
+openapi: 3.0.3
+info:
+  title: Users API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+
+  /users/register:
+    post:
+      summary: Register a new user
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+            example:
+              username: "maria.ionescu"
+              password: "parolaPuternica"
+              role: "TEACHER"
+      responses:
+        '200':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '400':
+          description: Validation error
+
+components:
+  schemas:
+
+    RegisterRequest:
+      type: object
+      required: [username, password, role]
+      properties:
+        username:
+          type: string
+          example: "maria.ionescu"
+        password:
+          type: string
+          example: "parolaPuternica"
+        role:
+          type: string
+          enum: [STUDENT, TEACHER, ADMIN, PARENT]
+          example: "TEACHER"
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: "maria.ionescu"
+        role:
+          type: string
+          example: "ADMIN"

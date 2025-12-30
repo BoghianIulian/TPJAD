@@ -1,0 +1,134 @@
+openapi: 3.0.3
+info:
+  title: Grades API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/grades:
+    post:
+      summary: Create a grade
+      tags: [Grades]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GradeCreateDTO'
+      responses:
+        '200':
+          description: Grade created
+
+  /api/grades/{id}:
+    get:
+      summary: Get grade by id
+      tags: [Grades]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Grade found
+    put:
+      summary: Update grade
+      tags: [Grades]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GradeUpdateDTO'
+      responses:
+        '200':
+          description: Grade updated
+    delete:
+      summary: Delete grade
+      tags: [Grades]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Grade deleted
+
+  /api/grades/bulk:
+    post:
+      summary: Add grades/absences in bulk for a test
+      tags: [Grades]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkTestDTO'
+      responses:
+        '200':
+          description: Bulk evaluation saved
+
+components:
+  schemas:
+    GradeCreateDTO:
+      type: object
+      required: [studentId, classCourseId, date, value]
+      properties:
+        studentId:
+          type: integer
+        classCourseId:
+          type: integer
+        date:
+          type: string
+          format: date
+          example: 2025-05-15
+        value:
+          type: integer
+          example: 9
+
+    GradeUpdateDTO:
+      type: object
+      required: [date, value]
+      properties:
+        date:
+          type: string
+          format: date
+        value:
+          type: integer
+
+    BulkTestDTO:
+      type: object
+      required: [classroomId, classCourseId, testDate, entries]
+      properties:
+        classroomId:
+          type: integer
+        classCourseId:
+          type: integer
+        testDate:
+          type: string
+          format: date
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentTestEntryDTO'
+
+    StudentTestEntryDTO:
+      type: object
+      required: [studentId]
+      properties:
+        studentId:
+          type: integer
+        grade:
+          type: integer
+          nullable: true
+        absent:
+          type: boolean
+          nullable: true

@@ -1,0 +1,82 @@
+openapi: 3.0.3
+info:
+  title: Absences API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/absences:
+    post:
+      summary: Create absence
+      tags: [Absences]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbsenceCreateDTO'
+      responses:
+        '200':
+          description: Absence created
+
+  /api/absences/{id}:
+    get:
+      summary: Get absence by id
+      tags: [Absences]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Absence found
+    put:
+      summary: Update absence
+      tags: [Absences]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: excused
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Absence updated
+    delete:
+      summary: Delete absence
+      tags: [Absences]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Absence deleted
+
+components:
+  schemas:
+    AbsenceCreateDTO:
+      type: object
+      required: [studentId, classCourseId, date]
+      properties:
+        studentId:
+          type: integer
+        classCourseId:
+          type: integer
+        date:
+          type: string
+          format: date

@@ -1,0 +1,220 @@
+openapi: 3.0.3
+info:
+  title: Parents API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+
+  /parents:
+    get:
+      summary: Get all parents (ADMIN, TEACHER)
+      tags: [Parents]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of parents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Parent"
+
+    post:
+      summary: Create a new parent (ADMIN only)
+      tags: [Parents]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ParentCreateDTO"
+            example:
+              firstName: "Elena"
+              lastName: "Popescu"
+              studentId: 7
+              registrationCode: "PAR-AB77"
+      responses:
+        '200':
+          description: Parent created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Parent"
+        '400':
+          description: Validation or duplicate registration code error
+
+
+  /parents/{id}:
+    get:
+      summary: Get parent by ID (ADMIN, TEACHER, PARENT)
+      tags: [Parents]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          example: 15
+          required: true
+      responses:
+        '200':
+          description: Parent found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Parent"
+        '404':
+          description: Parent not found
+
+    put:
+      summary: Update parent (ADMIN only)
+      tags: [Parents]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 15
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ParentUpdateDTO"
+            example:
+              firstName: "Elena"
+              lastName: "Georgescu"
+              studentId: 10
+      responses:
+        '200':
+          description: Parent updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Parent"
+
+    delete:
+      summary: Delete parent (ADMIN only)
+      tags: [Parents]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          example: 15
+          required: true
+      responses:
+        '200':
+          description: Parent deleted
+        '404':
+          description: Parent not found
+
+
+  /parents/student/{studentId}:
+    get:
+      summary: Get parents of a student (ADMIN, TEACHER)
+      tags: [Parents]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: studentId
+          in: path
+          schema:
+            type: integer
+          example: 7
+          required: true
+      responses:
+        '200':
+          description: List of parents of this student
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Parent"
+        '404':
+          description: Student not found
+
+
+
+components:
+  schemas:
+
+    Parent:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 15
+        firstName:
+          type: string
+          example: "Elena"
+        lastName:
+          type: string
+          example: "Popescu"
+        registrationCode:
+          type: string
+          example: "PAR-AB77"
+        student:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 7
+            firstName:
+              type: string
+              example: "Ionut"
+            lastName:
+              type: string
+              example: "Vasilescu"
+
+    ParentCreateDTO:
+      type: object
+      required: [firstName, lastName, studentId, registrationCode]
+      properties:
+        firstName:
+          type: string
+          example: "Elena"
+        lastName:
+          type: string
+          example: "Popescu"
+        studentId:
+          type: integer
+          example: 7
+        registrationCode:
+          type: string
+          example: "PAR-AB77"
+
+    ParentUpdateDTO:
+      type: object
+      required: [firstName, lastName, studentId]
+      properties:
+        firstName:
+          type: string
+          example: "Elena"
+        lastName:
+          type: string
+          example: "Georgescu"
+        studentId:
+          type: integer
+          example: 10
+
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

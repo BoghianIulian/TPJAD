@@ -1,0 +1,209 @@
+openapi: 3.0.3
+info:
+  title: Students API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+
+  /students:
+    get:
+      summary: Get all students (ADMIN, TEACHER)
+      tags: [Students]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of students
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Student"
+
+    post:
+      summary: Create new student (ADMIN only)
+      tags: [Students]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudentCreateDTO"
+            example:
+              firstName: "Ionut"
+              lastName: "Vasilescu"
+              classroomId: 3
+              registrationCode: "STUD-XY12"
+      responses:
+        '200':
+          description: Student created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+        '400':
+          description: Validation error
+
+
+  /students/{id}:
+    get:
+      summary: Get student by ID (ADMIN, TEACHER)
+      tags: [Students]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 10
+      responses:
+        '200':
+          description: Student
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+        '404':
+          description: Not found
+
+    put:
+      summary: Update student (ADMIN only)
+      tags: [Students]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 10
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudentUpdateDTO"
+            example:
+              firstName: "Ionut"
+              lastName: "Vasilescu"
+              classroomId: 4
+      responses:
+        '200':
+          description: Student updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+
+    delete:
+      summary: Delete student (ADMIN only)
+      tags: [Students]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 10
+      responses:
+        '200':
+          description: Student deleted
+        '404':
+          description: Not found
+
+
+  /students/classroom/{classroomId}:
+    get:
+      summary: Get students by classroom (ADMIN, TEACHER)
+      tags: [Students]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: classroomId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 3
+      responses:
+        '200':
+          description: List of students in this classroom
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Student"
+        '404':
+          description: Classroom not found
+
+
+components:
+  schemas:
+
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        firstName:
+          type: string
+          example: "Ionut"
+        lastName:
+          type: string
+          example: "Vasilescu"
+        registrationCode:
+          type: string
+          example: "STUD-XY12"
+        classroomId:
+          type: integer
+          example: 3
+
+    StudentCreateDTO:
+      type: object
+      required: [firstName, lastName, classroomId, registrationCode]
+      properties:
+        firstName:
+          type: string
+          example: "Ionut"
+        lastName:
+          type: string
+          example: "Vasilescu"
+        classroomId:
+          type: integer
+          example: 3
+        registrationCode:
+          type: string
+          example: "STUD-AB55"
+
+    StudentUpdateDTO:
+      type: object
+      required: [firstName, lastName, classroomId]
+      properties:
+        firstName:
+          type: string
+          example: "Ionut"
+        lastName:
+          type: string
+          example: "Vasilescu"
+        classroomId:
+          type: integer
+          example: 4
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
