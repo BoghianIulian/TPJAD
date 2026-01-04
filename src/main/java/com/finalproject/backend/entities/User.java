@@ -1,5 +1,6 @@
 package com.finalproject.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.finalproject.backend.enums.Role;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
@@ -31,10 +32,13 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Teacher teacher;
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Parent parent;
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Student student;
 }

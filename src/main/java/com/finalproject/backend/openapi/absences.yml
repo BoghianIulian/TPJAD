@@ -11,12 +11,18 @@ paths:
     post:
       summary: Create absence
       tags: [Absences]
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/AbsenceCreateDTO'
+            example:
+              studentId: 12
+              classCourseId: 7
+              date: "2026-01-04"
       responses:
         '200':
           description: Absence created
@@ -25,44 +31,57 @@ paths:
     get:
       summary: Get absence by id
       tags: [Absences]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
           required: true
           schema: { type: integer }
+          example: 5
       responses:
         '200':
           description: Absence found
+
     put:
       summary: Update absence
       tags: [Absences]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
           required: true
           schema: { type: integer }
+          example: 5
         - in: query
           name: date
           required: true
           schema:
             type: string
             format: date
+          example: "2026-01-04"
         - in: query
           name: excused
           required: true
           schema:
             type: boolean
+          example: true
       responses:
         '200':
           description: Absence updated
+
     delete:
       summary: Delete absence
       tags: [Absences]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
           required: true
           schema: { type: integer }
+          example: 5
       responses:
         '204':
           description: Absence deleted
@@ -75,8 +94,17 @@ components:
       properties:
         studentId:
           type: integer
+          example: 12
         classCourseId:
           type: integer
+          example: 7
         date:
           type: string
           format: date
+          example: "2026-01-04"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

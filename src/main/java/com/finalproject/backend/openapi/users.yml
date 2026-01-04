@@ -10,8 +10,10 @@ paths:
 
   /users/register:
     post:
-      summary: Register a new user
+      summary: Register a new user (ADMIN/manual)
       tags: [Users]
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -19,9 +21,9 @@ paths:
             schema:
               $ref: "#/components/schemas/RegisterRequest"
             example:
-              username: "maria.ionescu"
+              username: "admin.user"
               password: "parolaPuternica"
-              role: "TEACHER"
+              role: "ADMIN"
       responses:
         '200':
           description: User created
@@ -31,6 +33,34 @@ paths:
                 $ref: "#/components/schemas/User"
         '400':
           description: Validation error
+        '401':
+          description: Unauthorized
+
+  /users/register-code:
+    post:
+      summary: Register a new user using registration code (Teacher/Student/Parent)
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterWithCodeRequest"
+            example:
+              username: "maria.ionescu"
+              password: "parolaPuternica"
+              registrationCode: "PROF-XYZ99"
+      responses:
+        '200':
+          description: User created and linked to entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '400':
+          description: Validation error
+        '401':
+          description: Unauthorized
 
 components:
   schemas:
@@ -50,6 +80,20 @@ components:
           enum: [STUDENT, TEACHER, ADMIN, PARENT]
           example: "TEACHER"
 
+    RegisterWithCodeRequest:
+      type: object
+      required: [username, password, registrationCode]
+      properties:
+        username:
+          type: string
+          example: "maria.ionescu"
+        password:
+          type: string
+          example: "parolaPuternica"
+        registrationCode:
+          type: string
+          example: "PROF-XYZ99"
+
     User:
       type: object
       properties:
@@ -61,4 +105,11 @@ components:
           example: "maria.ionescu"
         role:
           type: string
+          enum: [STUDENT, TEACHER, ADMIN, PARENT]
           example: "ADMIN"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

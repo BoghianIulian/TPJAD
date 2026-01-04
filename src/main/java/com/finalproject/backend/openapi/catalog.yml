@@ -4,19 +4,21 @@ info:
   version: 1.0.0
 
 servers:
-  - url : http://localhost:8080
-
+  - url: http://localhost:8080
 
 paths:
   /api/catalog/classroom/{classroomId}:
     get:
       summary: Get full class catalog (homeroom teacher)
       tags: [Catalog]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: classroomId
           required: true
           schema: { type: integer }
+          example: 3
       responses:
         '200':
           description: Class catalog
@@ -25,15 +27,26 @@ paths:
     get:
       summary: Get catalog for one course (teacher)
       tags: [Catalog]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: classroomId
           required: true
           schema: { type: integer }
+          example: 3
         - in: path
           name: classCourseId
           required: true
           schema: { type: integer }
+          example: 7
       responses:
         '200':
           description: Course catalog
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

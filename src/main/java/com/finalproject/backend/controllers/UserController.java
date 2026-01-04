@@ -1,6 +1,8 @@
 package com.finalproject.backend.controllers;
 
 import com.finalproject.backend.dto.RegisterRequest;
+import com.finalproject.backend.dto.RegisterWithCodeRequest;
+import com.finalproject.backend.dto.UserResponse;
 import com.finalproject.backend.entities.User;
 import com.finalproject.backend.services.UserService;
 import jakarta.validation.Valid;
@@ -18,8 +20,16 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public User register(@Valid @RequestBody RegisterRequest req) {
-        return userService.register(req);
+    public UserResponse register(@Valid @RequestBody RegisterRequest req) {
+
+        User u = userService.register(req);
+        return new UserResponse(u.getId(), u.getUsername(), u.getRole());
+    }
+
+    @PostMapping("/register-code")
+    public UserResponse registerWithCode(@Valid @RequestBody RegisterWithCodeRequest req) {
+        User u = userService.registerWithCode(req);
+        return new UserResponse(u.getId(), u.getUsername(), u.getRole());
     }
 }
 

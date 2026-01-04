@@ -8,7 +8,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/absences")
@@ -50,13 +52,24 @@ public class AbsenceController {
     /* ===================== CREATE ===================== */
 
     @PostMapping
-    public Absence create(@RequestBody @Valid CreateAbsenceDTO dto) {
-        return absenceService.create(
+    public Map<String, Object> create(@RequestBody @Valid CreateAbsenceDTO dto) {
+        Absence a = absenceService.create(
                 dto.getStudentId(),
                 dto.getClassCourseId(),
                 dto.getDate()
         );
+
+        Map<String, Object> resp = new LinkedHashMap<>();
+        resp.put("id", a.getId());
+        resp.put("studentLastName", a.getStudent().getLastName());
+        resp.put("studentFirstName", a.getStudent().getFirstName());
+        resp.put("courseName", a.getClassCourse().getCourse().getName());
+        resp.put("date", a.getDate());       // LocalDate -> "yyyy-MM-dd"
+        resp.put("excused", a.getExcused());
+
+        return resp;
     }
+
 
     /* ===================== UPDATE ===================== */
 
