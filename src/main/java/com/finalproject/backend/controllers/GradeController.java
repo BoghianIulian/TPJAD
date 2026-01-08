@@ -3,13 +3,18 @@ package com.finalproject.backend.controllers;
 import com.finalproject.backend.dto.CreateGradeDTO;
 import com.finalproject.backend.dto.UpdateGradeDTO;
 import com.finalproject.backend.dto.bulk.BulkTestDTO;
+import com.finalproject.backend.dto.grade.*;
 import com.finalproject.backend.entities.Grade;
+import com.finalproject.backend.mappers.GradeResponseMapper;
 import com.finalproject.backend.services.GradeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/grades")
@@ -25,40 +30,38 @@ public class GradeController {
         return gradeService.getById(id);
     }
 
+
     @GetMapping("/student/{studentId}")
-    public List<Grade> getByStudent(@PathVariable Long studentId) {
-        return gradeService.getByStudent(studentId);
+    public StudentGradesResponse getByStudent(@PathVariable Long studentId) {
+        return GradeResponseMapper.toStudentGrades(
+                gradeService.getByStudent(studentId)
+        );
     }
 
     @GetMapping("/student/{studentId}/course/{classCourseId}")
-    public List<Grade> getByStudentAndCourse(
+    public CourseGradesDTO getByStudentAndCourse(
             @PathVariable Long studentId,
             @PathVariable Long classCourseId
     ) {
-        return gradeService.getByStudentAndClassCourse(studentId, classCourseId);
+        return GradeResponseMapper.toStudentCourseGrades(
+                gradeService.getByStudentAndClassCourse(studentId, classCourseId)
+        );
     }
 
     @GetMapping("/course/{classCourseId}")
-    public List<Grade> getByCourse(@PathVariable Long classCourseId) {
-        return gradeService.getByClassCourse(classCourseId);
+    public CourseGradesResponse getByCourse(@PathVariable Long classCourseId) {
+        return GradeResponseMapper.toCourseGrades(
+                gradeService.getByClassCourse(classCourseId)
+        );
     }
 
     @GetMapping("/classroom/{classroomId}")
-    public List<Grade> getByClassroom(@PathVariable Long classroomId) {
-        return gradeService.getByClassroom(classroomId);
-    }
-
-    /* ===================== CREATE ===================== */
-
-    @PostMapping
-    public Grade create(@RequestBody @Valid CreateGradeDTO dto) {
-        return gradeService.create(
-                dto.getStudentId(),
-                dto.getClassCourseId(),
-                dto.getDateGiven(),
-                dto.getValue()
+    public ClassroomGradesResponse getByClassroom(@PathVariable Long classroomId) {
+        return GradeResponseMapper.toClassroomGrades(
+                gradeService.getByClassroom(classroomId)
         );
     }
+
 
     /* ===================== UPDATE ===================== */
 

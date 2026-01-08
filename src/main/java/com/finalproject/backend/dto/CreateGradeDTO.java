@@ -24,5 +24,5 @@ public class CreateGradeDTO {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @NotNull(message = "(must not be null)")
-    private LocalDate dateGiven;
+    private LocalDate date;
 }

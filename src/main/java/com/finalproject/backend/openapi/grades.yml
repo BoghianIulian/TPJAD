@@ -11,70 +11,219 @@ paths:
     post:
       summary: Create a grade
       tags: [Grades]
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/GradeCreateDTO'
+            example:
+              studentId: 12
+              classCourseId: 7
+              date: "2026-01-04"
+              value: 9
       responses:
         '200':
           description: Grade created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
 
   /api/grades/{id}:
     get:
       summary: Get grade by id
       tags: [Grades]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
           required: true
           schema: { type: integer }
+          example: 5
       responses:
         '200':
           description: Grade found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Grade not found
+  /api/grades/student/{studentId}:
+    get:
+      summary: Get all grades of a student (grouped by course)
+      tags: [ Grades ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Student grades
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/grades/student/{studentId}/course/{classCourseId}:
+    get:
+      summary: Get grades of a student for a specific course
+      tags: [ Grades ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+        - name: classCourseId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 7
+      responses:
+        '200':
+          description: Student grades for course
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/grades/course/{classCourseId}:
+    get:
+      summary: Get all grades for a course (all students)
+      tags: [ Grades ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: classCourseId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 7
+      responses:
+        '200':
+          description: Course grades
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/grades/classroom/{classroomId}:
+    get:
+      summary: Get all grades for a classroom
+      tags: [ Grades ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: classroomId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 3
+      responses:
+        '200':
+          description: Classroom grades
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+
     put:
       summary: Update grade
       tags: [Grades]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
           required: true
           schema: { type: integer }
+          example: 5
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/GradeUpdateDTO'
+            example:
+              date: "2026-01-10"
+              value: 10
       responses:
         '200':
           description: Grade updated
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Grade not found
+
     delete:
       summary: Delete grade
       tags: [Grades]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
           required: true
           schema: { type: integer }
+          example: 5
       responses:
         '204':
           description: Grade deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Grade not found
 
   /api/grades/bulk:
     post:
       summary: Add grades/absences in bulk for a test
       tags: [Grades]
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/BulkTestDTO'
+            example:
+              classroomId: 3
+              classCourseId: 7
+              testDate: "2026-01-15"
+              entries:
+                - studentId: 12
+                  grade: 9
+                  absent: false
+                - studentId: 13
+                  absent: true
       responses:
         '200':
           description: Bulk evaluation saved
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
 
 components:
   schemas:
@@ -89,7 +238,7 @@ components:
         date:
           type: string
           format: date
-          example: 2025-05-15
+          example: "2026-01-04"
         value:
           type: integer
           example: 9
@@ -101,8 +250,10 @@ components:
         date:
           type: string
           format: date
+          example: "2026-01-10"
         value:
           type: integer
+          example: 10
 
     BulkTestDTO:
       type: object
@@ -115,6 +266,7 @@ components:
         testDate:
           type: string
           format: date
+          example: "2026-01-15"
         entries:
           type: array
           items:
@@ -132,3 +284,9 @@ components:
         absent:
           type: boolean
           nullable: true
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
