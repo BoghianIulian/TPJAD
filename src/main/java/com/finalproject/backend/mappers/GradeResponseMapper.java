@@ -85,7 +85,7 @@ public class GradeResponseMapper {
         Map<Long, CourseStudentsGradesDTO> students = new LinkedHashMap<>();
 
         for (Grade g : grades) {
-            students.computeIfAbsent(
+            students.computeIfAbsent( // daca id ul studentului exista deja, se executa secventa de mai jos
                     g.getStudent().getId(),
                     id -> new CourseStudentsGradesDTO(
                             id,
@@ -93,7 +93,7 @@ public class GradeResponseMapper {
                             g.getStudent().getClassroom().getName(),
                             new ArrayList<>()
                     )
-            ).grades().add(
+            ).grades().add( // aceasta secventa se executa de fiecare data
                     new GradeEntryDTO(g.getId(), g.getDate(), g.getValue())
             );
         }
