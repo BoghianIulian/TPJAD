@@ -28,13 +28,14 @@ public class ParentService {
     private final StudentRepository studentRepo;
 
     @Value("${PrefixParent}")
-    private static String REGISTRATION_CODE_PREFIX;
+    private  String REGISTRATION_CODE_PREFIX;
 
     @Value("${LETTERS}")
-    private static String LETTERS;
+    private  String LETTERS;
 
     @Value("${DIGITS}")
-    private static String DIGITS;
+    private  String DIGITS;
+
     private static final SecureRandom RANDOM = new SecureRandom();
     // CREATE
     public Parent create(ParentCreateDTO dto) {
@@ -46,7 +47,8 @@ public class ParentService {
         Parent parent = Parent.builder()
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
-                .registrationCode(dto.getRegistrationCode())                .student(student)
+                .registrationCode(dto.getRegistrationCode())
+                .student(student)
                 .build();
 
         return parentRepo.save(parent);

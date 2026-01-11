@@ -93,6 +93,57 @@ paths:
         '404':
           description: Not found
 
+  /class-courses/classroom/{classroomId}:
+    get:
+      summary: Get class-course assignments for a classroom (ADMIN, TEACHER)
+      tags: [ ClassCourses ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: classroomId
+          required: true
+          schema:
+            type: integer
+          example: 3
+      responses:
+        '200':
+          description: Assignments for the classroom
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClassCourse"
+        '404':
+          description: Classroom not found
+
+  /class-courses/teacher/{teacherId}:
+    get:
+      summary: Get class-course assignments for a teacher (ADMIN, TEACHER)
+      tags: [ ClassCourses ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: teacherId
+          required: true
+          schema:
+            type: integer
+          example: 12
+      responses:
+          '200':
+            description: Assignments for the teacher
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/ClassCourse"
+          '404':
+            description: Teacher not found
+
+
 
 components:
   schemas:

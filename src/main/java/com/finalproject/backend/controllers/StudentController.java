@@ -19,13 +19,11 @@ public class StudentController {
     private final StudentService studentService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','TEACHER')")
     public List<Student> getAll() {
         return studentService.getAll();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','TEACHER')")
     public Student getById(@PathVariable Long id) {
         return studentService.getById(id);
     }

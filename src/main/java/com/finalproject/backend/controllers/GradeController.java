@@ -1,21 +1,17 @@
 package com.finalproject.backend.controllers;
 
-import com.finalproject.backend.dto.CreateGradeDTO;
 import com.finalproject.backend.dto.UpdateGradeDTO;
 import com.finalproject.backend.dto.bulk.BulkTestDTO;
 import com.finalproject.backend.dto.grade.*;
 import com.finalproject.backend.entities.Grade;
 import com.finalproject.backend.mappers.AbsenceGradeResponseMapper;
-import com.finalproject.backend.mappers.GradeResponseMapper;
 import com.finalproject.backend.services.GradeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/grades")
@@ -33,6 +29,7 @@ public class GradeController {
 
 
     @GetMapping("/student/{studentId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PARENT', 'STUDENT')")
     public StudentGradesResponse getByStudent(@PathVariable Long studentId) {
         return AbsenceGradeResponseMapper.toStudentGrades(
                 gradeService.getByStudent(studentId),
@@ -56,6 +53,7 @@ public class GradeController {
     }
 
     @GetMapping("/course/{classCourseId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public CourseGradesResponse getByCourse(@PathVariable Long classCourseId) {
         return AbsenceGradeResponseMapper.toCourseGrades(
                 gradeService.getByClassCourse(classCourseId),
@@ -66,6 +64,7 @@ public class GradeController {
     }
 
     @GetMapping("/classroom/{classroomId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ClassroomGradesResponse getByClassroom(@PathVariable Long classroomId) {
         return AbsenceGradeResponseMapper.toClassroomGrades(
                 gradeService.getByClassroom(classroomId),

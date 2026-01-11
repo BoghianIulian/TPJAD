@@ -22,13 +22,13 @@ import java.util.Set;
 public class TeacherService {
 
     @Value("${PrefixTeacher}")
-    private static String REGISTRATION_CODE_PREFIX;
+    private  String REGISTRATION_CODE_PREFIX;
 
     @Value("${LETTERS}")
-    private static String LETTERS;
+    private  String LETTERS;
 
     @Value("${DIGITS}")
-    private static String DIGITS;
+    private  String DIGITS;
 
     private static final SecureRandom RANDOM = new SecureRandom();
 

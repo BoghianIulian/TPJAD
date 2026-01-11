@@ -8,6 +8,7 @@ import com.finalproject.backend.entities.Absence;
 import com.finalproject.backend.mappers.AbsenceGradeResponseMapper;
 import com.finalproject.backend.services.AbsenceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class AbsenceQueryController {
     }
 
     @GetMapping("/student/{studentId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PARENT','STUDENT')")
     public StudentGradesResponse getByStudent(@PathVariable Long studentId) {
         List<Absence> absences = absenceService.getByStudent(studentId);
         return AbsenceGradeResponseMapper.toStudentGrades(
@@ -53,6 +55,7 @@ public class AbsenceQueryController {
     }
 
     @GetMapping("/course/{classCourseId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public CourseGradesResponse getByCourse(@PathVariable Long classCourseId) {
         List<Absence> absences = absenceService.getByClassCourse(classCourseId);
         return AbsenceGradeResponseMapper.toCourseGrades(
@@ -64,6 +67,7 @@ public class AbsenceQueryController {
     }
 
     @GetMapping("/classroom/{classroomId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ClassroomGradesResponse getByClassroom(@PathVariable Long classroomId) {
         List<Absence> absences = absenceService.getByClassroom(classroomId);
         return AbsenceGradeResponseMapper.toClassroomGrades(

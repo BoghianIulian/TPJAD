@@ -24,7 +24,6 @@ public class ClassCourseController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','TEACHER')")
     public ClassCourse getById(@PathVariable Long id) {
         return service.getById(id);
     }
@@ -39,6 +38,18 @@ public class ClassCourseController {
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
+    }
+
+    @GetMapping("/classroom/{classroomId}")
+    @PreAuthorize("hasAnyRole('ADMIN','TEACHER')")
+    public List<ClassCourse> getByClassroomId(@PathVariable Long classroomId) {
+        return service.getByClassroomId(classroomId);
+    }
+
+    @GetMapping("/teacher/{teacherId}")
+    @PreAuthorize("hasAnyRole('ADMIN','TEACHER')")
+    public List<ClassCourse> getByTeacherId(@PathVariable Long teacherId) {
+        return service.getByTeacherId(teacherId);
     }
 }
 

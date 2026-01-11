@@ -116,6 +116,21 @@ paths:
         '404':
           description: Teacher not found
 
+  /teachers/generateRegCode:
+    get:
+      summary: Generate teacher registration code (ADMIN only)
+      tags: [Teachers]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Registration code generated
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "PROF-AB12"
+
 components:
   schemas:
 

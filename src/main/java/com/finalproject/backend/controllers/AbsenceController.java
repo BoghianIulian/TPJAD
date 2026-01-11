@@ -6,6 +6,7 @@ import com.finalproject.backend.entities.Absence;
 import com.finalproject.backend.services.AbsenceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
@@ -23,6 +24,7 @@ public class AbsenceController {
     /* ===================== CREATE ===================== */
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public Map<String, Object> create(@RequestBody @Valid CreateAbsenceDTO dto) {
         Absence a = absenceService.create(
                 dto.getStudentId(),
@@ -45,6 +47,7 @@ public class AbsenceController {
     /* ===================== UPDATE ===================== */
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public Absence update(
             @PathVariable Long id,
             @RequestBody @Valid AbsenceUpdateDTO dto
@@ -58,6 +61,7 @@ public class AbsenceController {
 
     /* ===================== DELETE ===================== */
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         absenceService.delete(id);

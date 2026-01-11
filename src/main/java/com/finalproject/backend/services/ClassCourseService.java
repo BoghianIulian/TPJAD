@@ -59,6 +59,22 @@ public class ClassCourseService {
         return repo.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<ClassCourse> getByClassroomId(Long classroomId) {
+        if (!classroomRepo.existsById(classroomId)) {
+            throw new EntityNotFoundException("Classroom not found");
+        }
+        return repo.findByClassroomId(classroomId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ClassCourse> getByTeacherId(Long teacherId) {
+        if (!teacherRepo.existsById(teacherId)) {
+            throw new EntityNotFoundException("Teacher not found");
+        }
+        return repo.findByTeacherId(teacherId);
+    }
+
 
     @Transactional(readOnly = true)
     public ClassCourse getById(Long id) {

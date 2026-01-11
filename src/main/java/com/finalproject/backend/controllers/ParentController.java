@@ -25,13 +25,11 @@ public class ParentController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','PARENT')")
     public Parent getById(@PathVariable Long id) {
         return parentService.getById(id);
     }
 
     @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public List<Parent> getByStudent(@PathVariable Long studentId) {
         return parentService.getByStudent(studentId);
     }

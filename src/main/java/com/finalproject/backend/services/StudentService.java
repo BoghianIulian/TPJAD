@@ -24,13 +24,13 @@ import java.util.Set;
 public class StudentService {
 
     @Value("${PrefixStudent}")
-    private static String REGISTRATION_CODE_PREFIX;
+    private  String REGISTRATION_CODE_PREFIX;
 
     @Value("${LETTERS}")
-    private static String LETTERS;
+    private  String LETTERS;
 
     @Value("${DIGITS}")
-    private static String DIGITS;
+    private  String DIGITS;
 
     private static SecureRandom RANDOM = new SecureRandom();
 
