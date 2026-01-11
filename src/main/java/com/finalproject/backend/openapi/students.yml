@@ -149,6 +149,21 @@ paths:
           description: Classroom not found
 
 
+  /students/generateRegCode:
+    get:
+      summary: Generate student registration code (ADMIN only)
+      tags: [Students]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Registration code generated
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "STUD-AB12"
+
 components:
   schemas:
 
