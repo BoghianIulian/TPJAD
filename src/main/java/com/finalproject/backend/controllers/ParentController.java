@@ -34,6 +34,12 @@ public class ParentController {
         return parentService.getByStudent(studentId);
     }
 
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PARENT', 'TEACHER', 'STUDENT')")
+    public Parent getByUserId(@PathVariable Long userId) {
+        return parentService.getByUserId(userId);
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public Parent create(@Valid @RequestBody ParentCreateDTO dto) {

@@ -21,7 +21,6 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    @PreAuthorize("hasRole('ADMIN')")
     public UserResponse register(@Valid @RequestBody RegisterRequest req) {
 
         User u = userService.register(req);

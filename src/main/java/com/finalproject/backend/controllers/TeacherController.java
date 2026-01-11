@@ -49,6 +49,12 @@ public class TeacherController {
         teacherService.delete(id);
     }
 
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT', 'PARENT')")
+    public Teacher getByUserId(@PathVariable Long userId) {
+        return teacherService.getByUserId(userId);
+    }
+
     @GetMapping("/generateRegCode")
     @PreAuthorize("hasRole('ADMIN')")
     public String generateRegCode()

@@ -3,6 +3,7 @@ package com.finalproject.backend.repositories;
 import com.finalproject.backend.entities.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,5 +17,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     List<Student> findByClassroomId(Long classroomId);
     List<Student> findByClassroomIdOrderByLastNameAscFirstNameAsc(Long classroomId);
+
+    @Query("SELECT s FROM Student s WHERE s.user.id = :userId")
+    Optional<Student> findByUserId(@Param("userId") Long userId);
 
 }

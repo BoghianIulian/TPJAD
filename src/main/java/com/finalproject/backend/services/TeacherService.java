@@ -58,6 +58,12 @@ public class TeacherService {
                 .orElseThrow(() -> new EntityNotFoundException("Teacher not found: " + id));
     }
 
+    @Transactional(readOnly = true)
+    public Teacher getByUserId(Long userId) {
+        return teacherRepo.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Teacher not found for user id: " + userId));
+    }
+
     public Teacher update(Long id, TeacherUpdateDTO dto) {
 
         Teacher t = teacherRepo.findById(id)

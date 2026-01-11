@@ -67,6 +67,13 @@ public class ParentService {
                 .orElseThrow(() -> new EntityNotFoundException("Parent not found"));
     }
 
+    // GET BY USER ID
+    @Transactional(readOnly = true)
+    public Parent getByUserId(Long userId) {
+        return parentRepo.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Parent not found for user id: " + userId));
+    }
+
     // GET BY STUDENT
     @Transactional(readOnly = true)
     public List<Parent> getByStudent(Long studentId) {

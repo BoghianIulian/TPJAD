@@ -67,6 +67,13 @@ public class StudentService {
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
     }
 
+    // GET BY USER ID
+    @Transactional(readOnly = true)
+    public Student getByUserId(Long userId) {
+        return studentRepo.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Student not found for user id: " + userId));
+    }
+
     // UPDATE
     public Student update(Long id, StudentUpdateDTO dto) {
 
