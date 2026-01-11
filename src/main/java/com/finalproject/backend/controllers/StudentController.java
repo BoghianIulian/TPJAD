@@ -53,4 +53,12 @@ public class StudentController {
     public List<Student> getByClassroom(@PathVariable Long classroomId) {
         return studentService.getByClassroom(classroomId);
     }
+
+    @GetMapping("/generateRegCode")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String generateRegCode()
+    {
+        return studentService.generateUniqueRegistrationCode();
+    }
+
 }

@@ -1,0 +1,105 @@
+openapi: 3.0.3
+info:
+  title: Absence + Grades API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/absence-grades/student/{studentId}:
+    get:
+      summary: Get grades and absences of a student (grouped by course)
+      tags: [ AbsenceGrades ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Student grades and absences
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/absence-grades/student/{studentId}/course/{classCourseId}:
+    get:
+      summary: Get grades and absences of a student for a specific course
+      tags: [ AbsenceGrades ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+        - name: classCourseId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 7
+      responses:
+        '200':
+          description: Student grades and absences for course
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/absence-grades/course/{classCourseId}:
+    get:
+      summary: Get grades and absences for a course (all students)
+      tags: [ AbsenceGrades ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: classCourseId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 7
+      responses:
+        '200':
+          description: Course grades and absences
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/absence-grades/classroom/{classroomId}:
+    get:
+      summary: Get grades and absences for a classroom
+      tags: [ AbsenceGrades ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: classroomId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 3
+      responses:
+        '200':
+          description: Classroom grades and absences
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

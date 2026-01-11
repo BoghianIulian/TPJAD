@@ -48,4 +48,12 @@ public class TeacherController {
     public void delete(@PathVariable Long id) {
         teacherService.delete(id);
     }
+
+    @GetMapping("/generateRegCode")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String generateRegCode()
+    {
+        return teacherService.generateUniqueRegistrationCode();
+    }
+
 }

@@ -42,6 +42,98 @@ paths:
       responses:
         '200':
           description: Absence found
+        '404':
+          description: Absence not found
+
+  /api/absences/student/{studentId}:
+    get:
+      summary: Get all absences of a student (grouped by course)
+      tags: [ Absences ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Student absences
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/absences/student/{studentId}/course/{classCourseId}:
+     get:
+      summary: Get absences of a student for a specific course
+      tags: [ Absences ]
+      security:
+         - bearerAuth: [ ]
+       parameters:
+         - name: studentId
+           in: path
+           required: true
+           schema:
+            type: integer
+           example: 1
+         - name: classCourseId
+           in: path
+           required: true
+           schema:
+            type: integer
+           example: 7
+      responses:
+          '200':
+            description: Student absences for course
+          '401':
+            description: Unauthorized
+          '403':
+            description: Forbidden
+
+  /api/absences/course/{classCourseId}:
+    get:
+      summary: Get all absences for a course (all students)
+      tags: [ Absences ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: classCourseId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 7
+      responses:
+          '200':
+            description: Course absences
+          '401':
+            description: Unauthorized
+          '403':
+            description: Forbidden
+
+  /api/absences/classroom/{classroomId}:
+    get:
+      summary: Get all absences for a classroom
+      tags: [ Absences ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: classroomId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 3
+      responses:
+          '200':
+            description: Classroom absences
+          '401':
+            description: Unauthorized
+          '403':
+            description: Forbidden
 
     put:
       summary: Update absence
@@ -54,19 +146,15 @@ paths:
           required: true
           schema: { type: integer }
           example: 5
-        - in: query
-          name: date
+        requestBody:
           required: true
-          schema:
-            type: string
-            format: date
-          example: "2026-01-04"
-        - in: query
-          name: excused
-          required: true
-          schema:
-            type: boolean
-          example: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbsenceUpdateDTO'
+              example:
+                date: "2026-01-04"
+                excused: true
       responses:
         '200':
           description: Absence updated
@@ -103,6 +191,17 @@ components:
           format: date
           example: "2026-01-04"
 
+    AbsenceUpdateDTO:
+      type: object
+      required: [ date, excused ]
+      properties:
+        date:
+          type: string
+          format: date
+          example: "2026-01-04"
+        excused:
+          type: boolean
+          example: true
   securitySchemes:
     bearerAuth:
       type: http

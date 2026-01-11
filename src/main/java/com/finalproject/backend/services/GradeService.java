@@ -7,10 +7,7 @@ import com.finalproject.backend.entities.Grade;
 import com.finalproject.backend.entities.Student;
 import com.finalproject.backend.exceptions.EntityNotFoundException;
 import com.finalproject.backend.exceptions.EntityValidationException;
-import com.finalproject.backend.repositories.AbsenceRepository;
-import com.finalproject.backend.repositories.ClassCourseRepository;
-import com.finalproject.backend.repositories.GradeRepository;
-import com.finalproject.backend.repositories.StudentRepository;
+import com.finalproject.backend.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +24,7 @@ public class GradeService {
     private final StudentRepository studentRepository;
     private final ClassCourseRepository classCourseRepository;
     private final AbsenceService absenceService;
+    private final ClassroomRepository classroomRepository;
 
     /* ===================== GET ===================== */
 
@@ -38,22 +36,27 @@ public class GradeService {
 
     @Transactional(readOnly = true)
     public List<Grade> getByStudent(Long studentId) {
+        requireStudent(studentId);
         return gradeRepository.findByStudentIdOrderByDateAsc(studentId);
     }
 
     @Transactional(readOnly = true)
     public List<Grade> getByStudentAndClassCourse(Long studentId, Long classCourseId) {
+        requireStudent(studentId);
+        requireClassCourse(classCourseId);
         return gradeRepository
                 .findByStudentIdAndClassCourseIdOrderByDateAsc(studentId, classCourseId);
     }
 
     @Transactional(readOnly = true)
     public List<Grade> getByClassCourse(Long classCourseId) {
+        requireClassCourse(classCourseId);
         return gradeRepository.findByClassCourseIdOrderByDateAsc(classCourseId);
     }
 
     @Transactional(readOnly = true)
     public List<Grade> getByClassroom(Long classroomId) {
+        requireClassroom(classroomId);
         return gradeRepository.findByStudent_ClassroomIdOrderByDateAsc(classroomId);
     }
 
@@ -174,6 +177,24 @@ public class GradeService {
     private void validateStudentClass(Student student, ClassCourse classCourse) {
         if (!student.getClassroom().getId().equals(classCourse.getClassroom().getId())) {
             throw new EntityValidationException("Student does not belong to this classroom");
+        }
+    }
+
+    private void requireStudent(Long studentId) {
+        if (!studentRepository.existsById(studentId)) {
+            throw new EntityNotFoundException("Student not found");
+        }
+    }
+
+    private void requireClassCourse(Long classCourseId) {
+        if (!classCourseRepository.existsById(classCourseId)) {
+            throw new EntityNotFoundException("ClassCourse not found");
+        }
+    }
+
+    private void requireClassroom(Long classroomId) {
+        if (!classroomRepository.existsById(classroomId)) {
+            throw new EntityNotFoundException("Classroom not found");
         }
     }
 

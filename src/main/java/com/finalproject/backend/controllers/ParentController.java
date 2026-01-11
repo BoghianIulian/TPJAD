@@ -53,4 +53,13 @@ public class ParentController {
     public void delete(@PathVariable Long id) {
         parentService.delete(id);
     }
+
+    @GetMapping("/generateRegCode")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String generateRegCode()
+    {
+         return parentService.generateUniqueRegistrationCode();
+    }
+
+
 }

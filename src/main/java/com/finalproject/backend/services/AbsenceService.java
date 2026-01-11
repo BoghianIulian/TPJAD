@@ -19,6 +19,7 @@ public class AbsenceService {
     private final GradeRepository gradeRepository;
     private final StudentRepository studentRepository;
     private final ClassCourseRepository classCourseRepository;
+    private final ClassroomRepository classroomRepository;
 
     /* ===================== GET ===================== */
 
@@ -30,17 +31,21 @@ public class AbsenceService {
 
     @Transactional(readOnly = true)
     public List<Absence> getByStudent(Long studentId) {
+        requireStudent(studentId);
         return absenceRepository.findByStudentIdOrderByDateAsc(studentId);
     }
 
     @Transactional(readOnly = true)
     public List<Absence> getByStudentAndClassCourse(Long studentId, Long classCourseId) {
+        requireStudent(studentId);
+        requireClassCourse(classCourseId);
         return absenceRepository
                 .findByStudentIdAndClassCourseIdOrderByDateAsc(studentId, classCourseId);
     }
 
     @Transactional(readOnly = true)
     public List<Absence> getByClassCourse(Long classCourseId) {
+        requireClassCourse(classCourseId);
         return absenceRepository.findByClassCourseIdOrderByDateAsc(classCourseId);
     }
 
@@ -119,6 +124,24 @@ public class AbsenceService {
     private void validateStudentClass(Student student, ClassCourse classCourse) {
         if (!student.getClassroom().getId().equals(classCourse.getClassroom().getId())) {
             throw new EntityValidationException("Student does not belong to this classroom");
+        }
+    }
+
+    private void requireStudent(Long studentId) {
+        if (!studentRepository.existsById(studentId)) {
+            throw new EntityNotFoundException("Student not found");
+        }
+    }
+
+    private void requireClassCourse(Long classCourseId) {
+        if (!classCourseRepository.existsById(classCourseId)) {
+            throw new EntityNotFoundException("ClassCourse not found");
+        }
+    }
+
+    private void requireClassroom(Long classroomId) {
+        if (!classroomRepository.existsById(classroomId)) {
+            throw new EntityNotFoundException("Classroom not found");
         }
     }
 

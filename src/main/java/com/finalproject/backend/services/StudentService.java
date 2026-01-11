@@ -9,15 +9,30 @@ import com.finalproject.backend.exceptions.EntityValidationException;
 import com.finalproject.backend.repositories.ClassroomRepository;
 import com.finalproject.backend.repositories.StudentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class StudentService {
+
+    @Value("${PrefixStudent}")
+    private static String REGISTRATION_CODE_PREFIX;
+
+    @Value("${LETTERS}")
+    private static String LETTERS;
+
+    @Value("${DIGITS}")
+    private static String DIGITS;
+
+    private static SecureRandom RANDOM = new SecureRandom();
 
     private final StudentRepository studentRepo;
     private final ClassroomRepository classroomRepo;
@@ -25,9 +40,6 @@ public class StudentService {
     // CREATE
     public Student create(StudentCreateDTO dto) {
 
-        if (studentRepo.findByRegistrationCode(dto.getRegistrationCode()).isPresent()) {
-            throw new EntityValidationException("Registration code already exists: " + dto.getRegistrationCode());
-        }
 
         Classroom classroom = classroomRepo.findById(dto.getClassroomId())
                 .orElseThrow(() -> new EntityNotFoundException("Classroom not found"));
@@ -83,5 +95,23 @@ public class StudentService {
     @Transactional(readOnly = true)
     public List<Student> getByClassroom(Long classroomId) {
         return studentRepo.findByClassroomId(classroomId);
+    }
+
+    public String generateUniqueRegistrationCode() {
+        Set<String> existingCodes = new HashSet<>(studentRepo.getAllRegistrationCodes());
+        String candidate;
+        do {
+            candidate = REGISTRATION_CODE_PREFIX + randomSuffix();
+        } while (existingCodes.contains(candidate));
+        return candidate;
+    }
+
+    private String randomSuffix() {
+        return new StringBuilder()
+                .append(LETTERS.charAt(RANDOM.nextInt(LETTERS.length())))
+                .append(LETTERS.charAt(RANDOM.nextInt(LETTERS.length())))
+                .append(DIGITS.charAt(RANDOM.nextInt(DIGITS.length())))
+                .append(DIGITS.charAt(RANDOM.nextInt(DIGITS.length())))
+                .toString();
     }
 }
