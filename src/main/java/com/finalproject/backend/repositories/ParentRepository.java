@@ -18,4 +18,10 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
 
     @Query("SELECT p FROM Parent p WHERE p.user.id = :userId")
     Optional<Parent> findByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT p FROM Parent p JOIN FETCH p.student s WHERE s.classroom.id = :classroomId")
+    List<Parent> findByStudentClassroomId(@Param("classroomId") Long classroomId);
+
+    @Query("SELECT p FROM Parent p JOIN FETCH p.student s JOIN s.classroom c WHERE c.homeroomTeacher.id = :teacherId")
+    List<Parent> findByStudentClassroomHomeroomTeacherId(@Param("teacherId") Long teacherId);
 }

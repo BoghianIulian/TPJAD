@@ -1,6 +1,6 @@
 package com.finalproject.backend.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,8 +25,8 @@ public class Classroom {
     @JsonManagedReference
     private List<Student> students;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "homeroom_teacher_id", unique = true)
-    @JsonBackReference
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "homeroomClass", "user"})
     private Teacher homeroomTeacher;
 }

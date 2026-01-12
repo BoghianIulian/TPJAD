@@ -5,7 +5,7 @@ import com.finalproject.backend.dto.ParentUpdateDTO;
 import com.finalproject.backend.entities.Parent;
 import com.finalproject.backend.entities.Student;
 import com.finalproject.backend.exceptions.EntityNotFoundException;
-import com.finalproject.backend.exceptions.EntityValidationException;
+import com.finalproject.backend.repositories.ClassroomRepository;
 import com.finalproject.backend.repositories.ParentRepository;
 import com.finalproject.backend.repositories.StudentRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +26,7 @@ public class ParentService {
 
     private final ParentRepository parentRepo;
     private final StudentRepository studentRepo;
+    private final ClassroomRepository classroomRepository;
 
     @Value("${PrefixParent}")
     private  String REGISTRATION_CODE_PREFIX;
@@ -78,6 +79,21 @@ public class ParentService {
     @Transactional(readOnly = true)
     public List<Parent> getByStudent(Long studentId) {
         return parentRepo.findByStudentId(studentId);
+    }
+
+    // GET BY CLASSROOM
+    @Transactional(readOnly = true)
+    public List<Parent> getByClassroom(Long classroomId) {
+        if (!classroomRepository.existsById(classroomId)) {
+            throw new EntityNotFoundException("Classroom not found");
+        }
+        return parentRepo.findByStudentClassroomId(classroomId);
+    }
+
+    // GET BY HOMEROOM TEACHER
+    @Transactional(readOnly = true)
+    public List<Parent> getByHomeroomTeacher(Long teacherId) {
+        return parentRepo.findByStudentClassroomHomeroomTeacherId(teacherId);
     }
 
     // UPDATE

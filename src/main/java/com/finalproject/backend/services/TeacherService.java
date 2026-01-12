@@ -4,8 +4,9 @@ import com.finalproject.backend.dto.TeacherCreateDTO;
 import com.finalproject.backend.dto.TeacherUpdateDTO;
 import com.finalproject.backend.entities.Teacher;
 import com.finalproject.backend.exceptions.EntityNotFoundException;
-import com.finalproject.backend.exceptions.EntityValidationException;
 import com.finalproject.backend.repositories.TeacherRepository;
+import com.finalproject.backend.repositories.ClassroomRepository;
+import com.finalproject.backend.repositories.ClassCourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,8 @@ public class TeacherService {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private final TeacherRepository teacherRepo;
+    private final ClassroomRepository classroomRepo;
+    private final ClassCourseRepository classCourseRepo;
 
     public Teacher create(TeacherCreateDTO dto) {
 
@@ -76,9 +79,20 @@ public class TeacherService {
     }
 
     public void delete(Long id) {
-        if (!teacherRepo.existsById(id)) {
-            throw new EntityNotFoundException("Teacher not found: " + id);
-        }
+        Teacher teacher = teacherRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Teacher not found: " + id));
+        
+        // Before deleting the teacher, set homeroomTeacher to null for any classrooms
+        // that have this teacher as their homeroom teacher
+        classroomRepo.findByHomeroomTeacher(teacher).ifPresent(classroom -> {
+            classroom.setHomeroomTeacher(null);
+            classroomRepo.save(classroom);
+        });
+        
+        // Delete all ClassCourses that reference this teacher
+        // (since teacher_id is not nullable in ClassCourse)
+        classCourseRepo.findByTeacherId(id).forEach(classCourseRepo::delete);
+        
         teacherRepo.deleteById(id);
     }
 

@@ -36,8 +36,7 @@ public class TeacherController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
-
+    @PreAuthorize("hasRole('ADMIN')")
     public Teacher update(@PathVariable Long id,
                           @Valid @RequestBody TeacherUpdateDTO dto) {
         return teacherService.update(id, dto);

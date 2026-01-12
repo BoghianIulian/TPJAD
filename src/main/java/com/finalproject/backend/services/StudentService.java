@@ -74,6 +74,13 @@ public class StudentService {
                 .orElseThrow(() -> new EntityNotFoundException("Student not found for user id: " + userId));
     }
 
+    // GET BY PARENT ID
+    @Transactional(readOnly = true)
+    public Student getByParentId(Long parentId) {
+        return studentRepo.findByParentId(parentId)
+                .orElseThrow(() -> new EntityNotFoundException("Student not found for parent id: " + parentId));
+    }
+
     // UPDATE
     public Student update(Long id, StudentUpdateDTO dto) {
 
@@ -102,6 +109,15 @@ public class StudentService {
     @Transactional(readOnly = true)
     public List<Student> getByClassroom(Long classroomId) {
         return studentRepo.findByClassroomId(classroomId);
+    }
+
+    // GET NUMBER OF STUDENTS BY CLASSROOM
+    @Transactional(readOnly = true)
+    public Long getNumberOfStudentsByClassroom(Long classroomId) {
+        if (!classroomRepo.existsById(classroomId)) {
+            throw new EntityNotFoundException("Classroom not found");
+        }
+        return (long) studentRepo.findByClassroomId(classroomId).size();
     }
 
     public String generateUniqueRegistrationCode() {

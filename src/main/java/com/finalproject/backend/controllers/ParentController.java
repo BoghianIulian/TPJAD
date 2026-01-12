@@ -29,15 +29,27 @@ public class ParentController {
         return parentService.getById(id);
     }
 
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PARENT', 'TEACHER')")
+    public Parent getByUserId(@PathVariable Long userId) {
+        return parentService.getByUserId(userId);
+    }
+
     @GetMapping("/student/{studentId}")
     public List<Parent> getByStudent(@PathVariable Long studentId) {
         return parentService.getByStudent(studentId);
     }
 
-    @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PARENT', 'TEACHER', 'STUDENT')")
-    public Parent getByUserId(@PathVariable Long userId) {
-        return parentService.getByUserId(userId);
+    @GetMapping("/classroom/{classroomId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public List<Parent> getByClassroom(@PathVariable Long classroomId) {
+        return parentService.getByClassroom(classroomId);
+    }
+
+    @GetMapping("/homeroom-teacher/{teacherId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public List<Parent> getByHomeroomTeacher(@PathVariable Long teacherId) {
+        return parentService.getByHomeroomTeacher(teacherId);
     }
 
     @PostMapping

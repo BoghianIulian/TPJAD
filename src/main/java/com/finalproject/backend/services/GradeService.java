@@ -2,11 +2,13 @@ package com.finalproject.backend.services;
 
 import com.finalproject.backend.dto.bulk.BulkTestDTO;
 import com.finalproject.backend.dto.bulk.StudentTestEntryDTO;
+import com.finalproject.backend.dto.grade.CourseGradesResponse;
 import com.finalproject.backend.entities.ClassCourse;
 import com.finalproject.backend.entities.Grade;
 import com.finalproject.backend.entities.Student;
 import com.finalproject.backend.exceptions.EntityNotFoundException;
 import com.finalproject.backend.exceptions.EntityValidationException;
+import com.finalproject.backend.mappers.AbsenceGradeResponseMapper;
 import com.finalproject.backend.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -52,6 +54,32 @@ public class GradeService {
     public List<Grade> getByClassCourse(Long classCourseId) {
         requireClassCourse(classCourseId);
         return gradeRepository.findByClassCourseIdOrderByDateAsc(classCourseId);
+    }
+
+    @Transactional(readOnly = true)
+    public CourseGradesResponse getByCourseWithAllStudents(Long classCourseId) {
+        requireClassCourse(classCourseId);
+        
+        ClassCourse classCourse = classCourseRepository.findById(classCourseId)
+                .orElseThrow(() -> new EntityNotFoundException("ClassCourse not found"));
+        
+        Long classroomId = classCourse.getClassroom().getId();
+        List<Student> allStudents = studentRepository.findByClassroomIdOrderByLastNameAscFirstNameAsc(classroomId);
+        List<Grade> grades = gradeRepository.findByClassCourseIdOrderByDateAsc(classCourseId);
+        
+        String courseName = classCourse.getCourse().getName();
+        String teacherName = classCourse.getTeacher().getLastName() + " " + classCourse.getTeacher().getFirstName();
+        
+        return AbsenceGradeResponseMapper.toCourseGradesWithAllStudents(
+                grades,
+                List.of(),
+                allStudents,
+                false,
+                true,
+                classCourseId,
+                courseName,
+                teacherName
+        );
     }
 
     @Transactional(readOnly = true)

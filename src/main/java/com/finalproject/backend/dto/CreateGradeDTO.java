@@ -1,6 +1,8 @@
 package com.finalproject.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.finalproject.backend.config.LocalDateDeserializer;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -23,6 +25,7 @@ public class CreateGradeDTO {
     private Integer value;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @NotNull(message = "(must not be null)")
     private LocalDate date;
 }

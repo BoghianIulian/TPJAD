@@ -1,8 +1,10 @@
 package com.finalproject.backend.services;
 
+import com.finalproject.backend.dto.grade.CourseGradesResponse;
 import com.finalproject.backend.entities.*;
 import com.finalproject.backend.exceptions.EntityNotFoundException;
 import com.finalproject.backend.exceptions.EntityValidationException;
+import com.finalproject.backend.mappers.AbsenceGradeResponseMapper;
 import com.finalproject.backend.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,8 +52,48 @@ public class AbsenceService {
     }
 
     @Transactional(readOnly = true)
+    public CourseGradesResponse getByCourseWithAllStudents(Long classCourseId) {
+        requireClassCourse(classCourseId);
+        
+        ClassCourse classCourse = classCourseRepository.findById(classCourseId)
+                .orElseThrow(() -> new EntityNotFoundException("ClassCourse not found"));
+        
+        Long classroomId = classCourse.getClassroom().getId();
+        List<Student> allStudents = studentRepository.findByClassroomIdOrderByLastNameAscFirstNameAsc(classroomId);
+        List<Absence> absences = absenceRepository.findByClassCourseIdOrderByDateAsc(classCourseId);
+        
+        String courseName = classCourse.getCourse().getName();
+        String teacherName = classCourse.getTeacher().getLastName() + " " + classCourse.getTeacher().getFirstName();
+        
+        return AbsenceGradeResponseMapper.toCourseGradesWithAllStudents(
+                List.of(),
+                absences,
+                allStudents,
+                true,
+                false,
+                classCourseId,
+                courseName,
+                teacherName
+        );
+    }
+
+    @Transactional(readOnly = true)
     public List<Absence> getByClassroom(Long classroomId) {
         return absenceRepository.findByStudent_ClassroomIdOrderByDateAsc(classroomId);
+    }
+
+    @Transactional(readOnly = true)
+    public Long getTotalAbsencesByStudent(Long studentId) {
+        requireStudent(studentId);
+        return absenceRepository.findByStudentIdOrderByDateAsc(studentId).stream().count();
+    }
+
+    @Transactional(readOnly = true)
+    public Long getUnexcusedAbsencesByStudent(Long studentId) {
+        requireStudent(studentId);
+        return absenceRepository.findByStudentIdOrderByDateAsc(studentId).stream()
+                .filter(absence -> !absence.getExcused())
+                .count();
     }
 
     /* ===================== CREATE ===================== */
@@ -89,6 +131,17 @@ public class AbsenceService {
         }
 
         absence.setExcused(excused);
+        return absenceRepository.save(absence);
+    }
+
+    /* ===================== TOGGLE EXCUSED ===================== */
+
+    @Transactional
+    public Absence toggleExcused(Long absenceId) {
+        Absence absence = absenceRepository.findById(absenceId)
+                .orElseThrow(() -> new EntityNotFoundException("Absence not found"));
+        
+        absence.setExcused(!absence.getExcused());
         return absenceRepository.save(absence);
     }
 

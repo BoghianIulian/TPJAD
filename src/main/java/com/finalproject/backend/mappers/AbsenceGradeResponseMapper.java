@@ -4,6 +4,7 @@ import com.finalproject.backend.dto.absence.AbsenceEntryDTO;
 import com.finalproject.backend.dto.grade.*;
 import com.finalproject.backend.entities.Absence;
 import com.finalproject.backend.entities.Grade;
+import com.finalproject.backend.entities.Student;
 
 import java.util.*;
 
@@ -175,6 +176,70 @@ public class AbsenceGradeResponseMapper {
         );
     }
 
+    /* ===================== COURSE – ALL STUDENTS (INCLUDING ALL CLASSROOM STUDENTS) ===================== */
+
+    public static CourseGradesResponse toCourseGradesWithAllStudents(
+            List<Grade> grades,
+            List<Absence> absences,
+            List<Student> allStudents,
+            boolean includeAbsences,
+            boolean includeGrades,
+            Long classCourseId,
+            String courseName,
+            String teacherName
+    ) {
+        validateFlags(includeAbsences, includeGrades);
+
+        CourseContext context = new CourseContext(classCourseId, courseName, teacherName);
+
+        // Initialize all students with empty grades/absences
+        Map<Long, CourseStudentsGradesDTO> studentsMap = new LinkedHashMap<>();
+        for (Student student : safeList(allStudents)) {
+            studentsMap.put(student.getId(), new CourseStudentsGradesDTO(
+                    student.getId(),
+                    student.getLastName() + " " + student.getFirstName(),
+                    student.getClassroom().getName(),
+                    new ArrayList<>(),
+                    new ArrayList<>()
+            ));
+        }
+
+        // Populate grades
+        if (includeGrades) {
+            for (Grade g : safeList(grades)) {
+                CourseStudentsGradesDTO studentDTO = studentsMap.get(g.getStudent().getId());
+                if (studentDTO != null) {
+                    studentDTO.grades().add(
+                            new GradeEntryDTO(g.getId(), g.getDate(), g.getValue())
+                    );
+                }
+            }
+        }
+
+        // Populate absences
+        if (includeAbsences) {
+            for (Absence absence : safeList(absences)) {
+                CourseStudentsGradesDTO studentDTO = studentsMap.get(absence.getStudent().getId());
+                if (studentDTO != null) {
+                    studentDTO.absences().add(
+                            new AbsenceEntryDTO(
+                                    absence.getId(),
+                                    absence.getDate(),
+                                    absence.getExcused()
+                            )
+                    );
+                }
+            }
+        }
+
+        return new CourseGradesResponse(
+                context.classCourseId(),
+                context.courseName(),
+                context.teacherName(),
+                new ArrayList<>(studentsMap.values())
+        );
+    }
+
     /* ===================== CLASSROOM ===================== */
 
     public static ClassroomGradesResponse toClassroomGrades(
@@ -285,6 +350,7 @@ public class AbsenceGradeResponseMapper {
                         first.getClassCourse().getTeacher().getFirstName()
         );
     }
+
 
     private static String resolveClassroom(
             List<Grade> grades,

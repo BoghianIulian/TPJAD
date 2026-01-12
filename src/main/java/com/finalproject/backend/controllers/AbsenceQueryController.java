@@ -57,13 +57,7 @@ public class AbsenceQueryController {
     @GetMapping("/course/{classCourseId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public CourseGradesResponse getByCourse(@PathVariable Long classCourseId) {
-        List<Absence> absences = absenceService.getByClassCourse(classCourseId);
-        return AbsenceGradeResponseMapper.toCourseGrades(
-                List.of(),
-                absences,
-                true,
-                false
-        );
+        return absenceService.getByCourseWithAllStudents(classCourseId);
     }
 
     @GetMapping("/classroom/{classroomId}")

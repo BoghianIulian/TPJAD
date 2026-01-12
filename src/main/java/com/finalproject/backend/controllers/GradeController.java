@@ -1,5 +1,6 @@
 package com.finalproject.backend.controllers;
 
+import com.finalproject.backend.dto.CreateGradeDTO;
 import com.finalproject.backend.dto.UpdateGradeDTO;
 import com.finalproject.backend.dto.bulk.BulkTestDTO;
 import com.finalproject.backend.dto.grade.*;
@@ -11,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/grades")
@@ -55,12 +58,7 @@ public class GradeController {
     @GetMapping("/course/{classCourseId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public CourseGradesResponse getByCourse(@PathVariable Long classCourseId) {
-        return AbsenceGradeResponseMapper.toCourseGrades(
-                gradeService.getByClassCourse(classCourseId),
-                List.of(),
-                false,
-                true
-        );
+        return gradeService.getByCourseWithAllStudents(classCourseId);
     }
 
     @GetMapping("/classroom/{classroomId}")
@@ -76,9 +74,35 @@ public class GradeController {
 
 
 
+    /* ===================== CREATE ===================== */
+
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public Map<String, Object> create(@RequestBody @Valid CreateGradeDTO dto) {
+        Grade g = gradeService.create(
+                dto.getStudentId(),
+                dto.getClassCourseId(),
+                dto.getDate(),
+                dto.getValue()
+        );
+
+        Map<String, Object> resp = new LinkedHashMap<>();
+        resp.put("id", g.getId());
+        resp.put("studentId", g.getStudent().getId());
+        resp.put("studentLastName", g.getStudent().getLastName());
+        resp.put("studentFirstName", g.getStudent().getFirstName());
+        resp.put("classCourseId", g.getClassCourse().getId());
+        resp.put("courseName", g.getClassCourse().getCourse().getName());
+        resp.put("value", g.getValue());
+        resp.put("date", g.getDate()); // LocalDate -> "yyyy-MM-dd"
+
+        return resp;
+    }
+
     /* ===================== UPDATE ===================== */
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public Grade update(
             @PathVariable Long id,
             @RequestBody @Valid UpdateGradeDTO dto
@@ -93,6 +117,7 @@ public class GradeController {
     /* ===================== DELETE ===================== */
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public void delete(@PathVariable Long id) {
         gradeService.delete(id);
     }

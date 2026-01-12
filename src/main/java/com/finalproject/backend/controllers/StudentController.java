@@ -52,10 +52,22 @@ public class StudentController {
         return studentService.getByClassroom(classroomId);
     }
 
+    @GetMapping("/classroom/{classroomId}/count")
+    @PreAuthorize("hasAnyRole('ADMIN','TEACHER')")
+    public Long getNumberOfStudentsByClassroom(@PathVariable Long classroomId) {
+        return studentService.getNumberOfStudentsByClassroom(classroomId);
+    }
+
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER', 'PARENT')")
     public Student getByUserId(@PathVariable Long userId) {
         return studentService.getByUserId(userId);
+    }
+
+    @GetMapping("/parent/{parentId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PARENT', 'TEACHER')")
+    public Student getByParentId(@PathVariable Long parentId) {
+        return studentService.getByParentId(parentId);
     }
 
     @GetMapping("/generateRegCode")

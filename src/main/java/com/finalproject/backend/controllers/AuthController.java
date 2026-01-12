@@ -1,9 +1,7 @@
 package com.finalproject.backend.controllers;
 
 import com.finalproject.backend.dto.LoginRequest;
-import com.finalproject.backend.entities.User;
-import com.finalproject.backend.repositories.UserRepository;
-import com.finalproject.backend.security.JwtTokenProvider;
+
 import com.finalproject.backend.services.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
